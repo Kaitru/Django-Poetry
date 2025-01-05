@@ -1,5 +1,3 @@
-Создаю файл README.md:
-
 ```markdown:README.md
 # Django Poetry - Поэтическая платформа
 
