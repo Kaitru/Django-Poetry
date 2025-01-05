@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Авторы{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Наши авторы</h2>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for author in authors %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        {% if author.avatar %}
+                            <img src="{{ author.avatar.url }}" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/100" class="rounded-circle mb-3">
+                        {% endif %}
+                        
+                        <h5 class="card-title">
+                            <a href="{% url 'author_detail' author.id %}">{{ author.username }}</a>
+                        </h5>
+                        
+                        <div class="text-muted mb-2">
+                            <div>Рейтинг: {{ author.avg_rating|default:"0"|floatformat:2 }} ⭐</div>
+                            <div>Стихов: {{ author.poem_count }}</div>
+                        </div>
+                        
+                        <a href="{% url 'author_detail' author.id %}" class="btn btn-outline-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p>Пока нет авторов.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if authors.paginator.num_pages > 1 %}
+    <nav aria-label="Навигация по страницам" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if authors.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; Первая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ authors.previous_page_number }}">Предыдущая</a>
+                </li>
+            {% endif %}
+
+            {% for num in authors.paginator.page_range %}
+                {% if authors.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > authors.number|add:'-3' and num < authors.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if authors.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ authors.next_page_number }}">Следующая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ authors.paginator.num_pages }}">Последняя &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %} 

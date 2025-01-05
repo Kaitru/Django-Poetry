@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" class="rounded-circle mb-3">
+                    {% endif %}
+                    
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">{{ user.get_role_display }}</p>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="avatar" class="form-label">Изменить аватар</label>
+                            <input type="file" class="form-control" id="avatar" name="avatar">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Загрузить</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Редактировать профиль</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="profile_edit" value="1">
+                        
+                        {% for field in profile_form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {% render_field field class="form-control" %}
+                                {% if field.errors %}
+                                    <div class="alert alert-danger">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        
+                        <button type="submit" class="btn btn-primary w-100">Сохранить изменения</button>
+                    </form>
+                </div>
+            </div>
+
+            {% if user.role == 'reader' %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="become_author">
+                        <button type="submit" class="btn btn-success w-100">Стать автором</button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="request_critic">
+                        <button type="submit" class="btn btn-info w-100">Стать критиком</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-8">
+            {% if user.role == 'author' %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Мои стихи</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_poems %}
+                        {% for poem in user_poems %}
+                            <div class="mb-3">
+                                <h6><a href="{% url 'poem_detail' poem.id %}">{{ poem.title }}</a></h6>
+                                <small class="text-muted">
+                                    Рейтинг: {{ poem.user_rating|floatformat:2 }} ⭐
+                                    {% if poem.critic_rating %}
+                                        | Оценка критиков: {{ poem.critic_rating|floatformat:1 }} ⭐
+                                    {% endif %}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>У вас пока нет стихов.</p>
+                        <a href="{% url 'new_poem' %}" class="btn btn-primary">Написать стихотворение</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Мои комментарии</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_comments %}
+                        {% for comment in user_comments %}
+                            <div class="mb-3">
+                                <p class="mb-1">{{ comment.content }}</p>
+                                <small class="text-muted">
+                                    К стихотворению: <a href="{% url 'poem_detail' comment.poem.id %}">{{ comment.poem.title }}</a>
+                                    | {{ comment.created_at|date:"d.m.Y H:i" }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>У вас пока нет комментариев.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Мои оценки</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_ratings %}
+                        {% for rating in user_ratings %}
+                            <div class="mb-2">
+                                <a href="{% url 'poem_detail' rating.poem.id %}">{{ rating.poem.title }}</a>
+                                <span class="text-warning">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= rating.rating %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>Вы пока не оценили ни одного стихотворения.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

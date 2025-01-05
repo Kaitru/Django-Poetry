@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ poem.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">{{ poem.title }}</h2>
+                    <h6 class="card-subtitle mb-3 text-muted">
+                        Автор: <a href="{% url 'author_detail' poem.author.id %}">{{ poem.author.get_full_name }}</a>
+                    </h6>
+                    
+                    <div class="poem-content mb-4" style="white-space: pre-line;">{{ poem.content }}</div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-primary">{{ poem.mood }}</span>
+                            {% for genre in poem.genres.all %}
+                                <span class="badge bg-secondary">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            <i class="bi bi-star-fill text-warning"></i> {{ poem.user_rating|floatformat:2 }}
+                            {% if user.role == 'critic' or user.role == 'admin' %}
+                                <i class="bi bi-award-fill text-info ms-2"></i> {{ poem.critic_rating|floatformat:1 }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Оценить стихотворение</h5>
+                    <form method="post" action="{% url 'rate_poem' poem.id %}" class="d-flex align-items-center gap-2">
+                        {% csrf_token %}
+                        <select name="rating" class="form-select" style="width: auto;" required>
+                            <option value="">Выберите оценку</option>
+                            {% if user.role == 'critic' %}
+                                {% for i in "12345678910"|make_list %}
+                                    <option value="{{ i }}" {% if critic_rating.rating == i|add:"0" %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            {% else %}
+                                {% for i in "12345"|make_list %}
+                                    <option value="{{ i }}" {% if user_rating.rating == i|add:"0" %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        <button type="submit" class="btn btn-primary">Оценить</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Добавить комментарий</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'add_comment' poem.id %}">
+                        {% csrf_token %}
+                        {{ comment_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Отправить</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Комментарии</h5>
+                </div>
+                <div class="card-body">
+                    {% for comment in comments %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ comment.user.username }}</strong>
+                                <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+                            </div>
+                            <p class="mb-0">{{ comment.content }}</p>
+                        </div>
+                    {% empty %}
+                        <p>Пока нет комментариев.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% if critic_comments %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Отзывы критиков</h5>
+                </div>
+                <div class="card-body">
+                    {% for comment in critic_comments %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ comment.critic.get_full_name }}</strong>
+                                <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+                            </div>
+                            <p class="mb-0">{{ comment.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

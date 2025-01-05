@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Фильтры</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'search' %}">
+                        <div class="mb-3">
+                            <label for="q" class="form-label">Поиск</label>
+                            <input type="text" class="form-control" id="q" name="q" value="{{ query }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="genre" class="form-label">Жанр</label>
+                            <select class="form-select" id="genre" name="genre">
+                                <option value="">Все жанры</option>
+                                {% for genre in genres %}
+                                    <option value="{{ genre.id }}" {% if selected_genre == genre.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ genre.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="mood" class="form-label">Настроение</label>
+                            <select class="form-select" id="mood" name="mood">
+                                <option value="">Все настроения</option>
+                                {% for mood in moods %}
+                                    <option value="{{ mood.id }}" {% if selected_mood == mood.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ mood.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Применить фильтры</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            {% if query or selected_genre or selected_mood %}
+                <h4 class="mb-4">Результаты поиска</h4>
+                {% if poems %}
+                    {% for poem in poems %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{% url 'poem_detail' poem.id %}">{{ poem.title }}</a>
+                                </h5>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <a href="{% url 'author_detail' poem.author.id %}">{{ poem.author.get_full_name }}</a>
+                                </h6>
+                                <p class="card-text">{{ poem.content|truncatewords:30 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-primary">{{ poem.mood }}</span>
+                                        {% for genre in poem.genres.all %}
+                                            <span class="badge bg-secondary">{{ genre }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-star-fill text-warning"></i> {{ poem.user_rating|floatformat:2 }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    {% if poems.paginator.num_pages > 1 %}
+                    <nav aria-label="Навигация по страницам">
+                        <ul class="pagination justify-content-center">
+                            {% if poems.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1&q={{ query }}&genre={{ selected_genre }}&mood={{ selected_mood }}">&laquo; Первая</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ poems.previous_page_number }}&q={{ query }}&genre={{ selected_genre }}&mood={{ selected_mood }}">Предыдущая</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in poems.paginator.page_range %}
+                                {% if poems.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > poems.number|add:'-3' and num < poems.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}&q={{ query }}&genre={{ selected_genre }}&mood={{ selected_mood }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if poems.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ poems.next_page_number }}&q={{ query }}&genre={{ selected_genre }}&mood={{ selected_mood }}">Следующая</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ poems.paginator.num_pages }}&q={{ query }}&genre={{ selected_genre }}&mood={{ selected_mood }}">Последняя &raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info">
+                        По вашему запросу ничего не найдено.
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    Введите поисковый запрос или выберите фильтры для поиска стихов.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

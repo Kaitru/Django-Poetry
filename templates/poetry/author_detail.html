@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ author.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if author.avatar %}
+                        <img src="{{ author.avatar.url }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" class="rounded-circle mb-3">
+                    {% endif %}
+                    
+                    <h3 class="card-title">{{ author.get_full_name }}</h3>
+                    <div class="text-muted mb-3">
+                        <div>Рейтинг читателей: {{ author.user_rating|floatformat:2 }} ⭐</div>
+                        {% if user.role == 'critic' or user.role == 'admin' %}
+                            <div>Рейтинг критиков: {{ author.critic_rating|floatformat:1 }} ⭐</div>
+                        {% endif %}
+                        <div>Стихов: {{ author.poems.count }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Стихи автора</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <form method="get" class="form-inline">
+                            <div class="input-group">
+                                <select name="sort" class="form-select">
+                                    <option value="date" {% if sort_by == 'date' %}selected{% endif %}>По дате</option>
+                                    <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>По рейтингу</option>
+                                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>По названию</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary">Сортировать</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    {% for poem in poems %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{% url 'poem_detail' poem.id %}">{{ poem.title }}</a>
+                                </h5>
+                                <p class="card-text">{{ poem.content|truncatewords:30 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-primary">{{ poem.mood }}</span>
+                                        {% for genre in poem.genres.all %}
+                                            <span class="badge bg-secondary">{{ genre }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-star-fill text-warning"></i> {{ poem.user_rating|floatformat:2 }}
+                                        {% if user.role == 'critic' or user.role == 'admin' %}
+                                            <i class="bi bi-award-fill text-info ms-2"></i> {{ poem.critic_rating|floatformat:1 }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>У автора пока нет стихов.</p>
+                    {% endfor %}
+                    
+                    {% if poems.paginator.num_pages > 1 %}
+                    <nav aria-label="Навигация по страницам">
+                        <ul class="pagination justify-content-center">
+                            {% if poems.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if sort_by %}&sort={{ sort_by }}{% endif %}">&laquo; Первая</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ poems.previous_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Предыдущая</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in poems.paginator.page_range %}
+                                {% if poems.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > poems.number|add:'-3' and num < poems.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if poems.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ poems.next_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Следующая</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ poems.paginator.num_pages }}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Последняя &raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

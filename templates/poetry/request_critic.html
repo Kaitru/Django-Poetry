@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Запрос на роль критика{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Запрос на роль критика</h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-4">
+                    Роль критика позволяет оставлять профессиональные отзывы и оценивать стихи по 10-балльной шкале.
+                    Заявки рассматриваются администрацией сайта.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="alert alert-info">
+                        Ваша заявка будет рассмотрена администрацией. Мы свяжемся с вами для уточнения деталей.
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить заявку</button>
+                    <a href="{% url 'profile' %}" class="btn btn-secondary">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

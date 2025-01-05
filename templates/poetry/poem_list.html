@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Все стихи{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Все стихи</h2>
+    
+    {% for poem in poems %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ poem.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    <a href="{% url 'author_detail' poem.author.id %}">{{ poem.author.username }}</a>
+                </h6>
+                <p class="card-text">{{ poem.content|truncatewords:50 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-primary">{{ poem.mood }}</span>
+                        {% for genre in poem.genres.all %}
+                            <span class="badge bg-secondary">{{ genre }}</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <i class="bi bi-star-fill text-warning"></i> {{ poem.user_rating }}
+                        {% if user.role == 'critic' or user.role == 'admin' %}
+                            <i class="bi bi-award-fill text-info ms-2"></i> {{ poem.critic_rating }}
+                        {% endif %}
+                    </div>
+                </div>
+                <a href="{% url 'poem_detail' poem.id %}" class="btn btn-outline-primary mt-3">Читать полностью</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>Пока нет стихов.</p>
+    {% endfor %}
+
+    {% if poems.paginator.num_pages > 1 %}
+    <nav aria-label="Навигация по страницам">
+        <ul class="pagination justify-content-center">
+            {% if poems.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; Первая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ poems.previous_page_number }}">Предыдущая</a>
+                </li>
+            {% endif %}
+
+            {% for num in poems.paginator.page_range %}
+                {% if poems.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > poems.number|add:'-3' and num < poems.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if poems.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ poems.next_page_number }}">Следующая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ poems.paginator.num_pages }}">Последняя &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %} 

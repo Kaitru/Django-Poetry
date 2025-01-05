@@ -1,0 +1,182 @@
+[
+    {
+        "model": "poetry.mood",
+        "pk": 1,
+        "fields": {
+            "name": "Лирическое"
+        }
+    },
+    {
+        "model": "poetry.mood",
+        "pk": 2,
+        "fields": {
+            "name": "Философское"
+        }
+    },
+    {
+        "model": "poetry.mood",
+        "pk": 3,
+        "fields": {
+            "name": "Грустное"
+        }
+    },
+    {
+        "model": "poetry.mood",
+        "pk": 4,
+        "fields": {
+            "name": "Патриотическое"
+        }
+    },
+    {
+        "model": "poetry.mood",
+        "pk": 5,
+        "fields": {
+            "name": "Романтическое"
+        }
+    },
+    {
+        "model": "poetry.genre",
+        "pk": 1,
+        "fields": {
+            "name": "Сонет"
+        }
+    },
+    {
+        "model": "poetry.genre",
+        "pk": 2,
+        "fields": {
+            "name": "Элегия"
+        }
+    },
+    {
+        "model": "poetry.genre",
+        "pk": 3,
+        "fields": {
+            "name": "Баллада"
+        }
+    },
+    {
+        "model": "poetry.genre",
+        "pk": 4,
+        "fields": {
+            "name": "Ода"
+        }
+    },
+    {
+        "model": "poetry.genre",
+        "pk": 5,
+        "fields": {
+            "name": "Поэма"
+        }
+    },
+    {
+        "model": "poetry.customuser",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$720000$g8KzKQh9xJtGvN5pL4XYPL$9J2PYjXN8Q5J5Q5Q5J2PYjXN8Q5J5Q5Q==",
+            "last_login": "2025-01-02T12:00:00Z",
+            "is_superuser": false,
+            "username": "pushkin",
+            "first_name": "Александр",
+            "last_name": "Пушкин",
+            "email": "pushkin@example.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-01-01T12:00:00Z",
+            "role": "author",
+            "phone_number": "+79001234567",
+            "user_rating": "4.50",
+            "critic_rating": "0.0"
+        }
+    },
+    {
+        "model": "poetry.poem",
+        "pk": 1,
+        "fields": {
+            "title": "Я помню чудное мгновенье",
+            "content": "Я помню чудное мгновенье:\nПередо мной явилась ты,\nКак мимолетное виденье,\nКак гений чистой красоты.\n\nВ томленьях грусти безнадежной,\nВ тревогах шумной суеты,\nЗвучал мне долго голос нежный\nИ снились милые черты.\n\nШли годы. Бурь порыв мятежный\nРассеял прежние мечты,\nИ я забыл твой голос нежный,\nТвои небесные черты.\n\nВ глуши, во мраке заточенья\nТянулись тихо дни мои\nБез божества, без вдохновенья,\nБез слез, без жизни, без любви.\n\nДуше настало пробужденье:\nИ вот опять явилась ты,\nКак мимолетное виденье,\nКак гений чистой красоты.\n\nИ сердце бьется в упоенье,\nИ для него воскресли вновь\nИ божество, и вдохновенье,\nИ жизнь, и слезы, и любовь.",
+            "author": 1,
+            "mood": 1,
+            "created_at": "2025-01-02T12:00:00Z",
+            "user_rating": "4.80",
+            "critic_rating": "9.5",
+            "genres": [1, 2]
+        }
+    },
+    {
+        "model": "poetry.customuser",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$720000$g8KzKQh9xJtGvN5pL4XYPL$9J2PYjXN8Q5J5Q5Q5J2PYjXN8Q5J5Q5Q==",
+            "username": "lermontov",
+            "first_name": "Михаил",
+            "last_name": "Лермонтов",
+            "email": "lermontov@example.com",
+            "is_active": true,
+            "date_joined": "2025-01-01T12:00:00Z",
+            "role": "author",
+            "user_rating": "4.70",
+            "critic_rating": "9.2"
+        }
+    },
+    {
+        "model": "poetry.customuser",
+        "pk": 3,
+        "fields": {
+            "password": "pbkdf2_sha256$720000$g8KzKQh9xJtGvN5pL4XYPL$9J2PYjXN8Q5J5Q5Q5J2PYjXN8Q5J5Q5Q==",
+            "username": "esenin",
+            "first_name": "Сергей",
+            "last_name": "Есенин",
+            "email": "esenin@example.com",
+            "is_active": true,
+            "date_joined": "2025-01-01T12:00:00Z",
+            "role": "author",
+            "user_rating": "4.85",
+            "critic_rating": "9.4"
+        }
+    },
+    {
+        "model": "poetry.poem",
+        "pk": 2,
+        "fields": {
+            "title": "Парус",
+            "content": "Белеет парус одинокой\nВ тумане моря голубом!..\nЧто ищет он в стране далекой?\nЧто кинул он в краю родном?..\n\nИграют волны — ветер свищет,\nИ мачта гнется и скрыпит...\nУвы! он счастия не ищет\nИ не от счастия бежит!\n\nПод ним струя светлей лазури,\nНад ним луч солнца золотой...\nА он, мятежный, просит бури,\nКак будто в бурях есть покой!",
+            "author": 2,
+            "mood": 2,
+            "created_at": "2025-01-02T12:01:00Z",
+            "user_rating": "4.90",
+            "critic_rating": "9.7",
+            "genres": [2]
+        }
+    },
+    {
+        "model": "poetry.poem",
+        "pk": 3,
+        "fields": {
+            "title": "Письмо к женщине",
+            "content": "Вы помните,\nВы всё, конечно, помните,\nКак я стоял,\nПриблизившись к стене,\nВзволнованно ходили вы по комнате\nИ что-то резкое\nВ лицо бросали мне...",
+            "author": 3,
+            "mood": 3,
+            "created_at": "2025-01-02T12:02:00Z",
+            "user_rating": "4.85",
+            "critic_rating": "9.3",
+            "genres": [2]
+        }
+    },
+    {
+        "model": "poetry.customuser",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$720000$g8KzKQh9xJtGvN5pL4XYPL$9J2PYjXN8Q5J5Q5Q5J2PYjXN8Q5J5Q5Q==",
+            "username": "critic",
+            "first_name": "Виссарион",
+            "last_name": "Белинский",
+            "email": "critic@example.com",
+            "is_active": true,
+            "date_joined": "2025-01-01T12:00:00Z",
+            "role": "critic",
+            "user_rating": "0.0",
+            "critic_rating": "9.8"
+        }
+    }
+] 
